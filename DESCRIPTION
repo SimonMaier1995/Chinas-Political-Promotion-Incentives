@@ -1,0 +1,12 @@
+Package: RTutorChinaPromotionIncentives
+Type: Package
+Title: RTutor problem set Chinas-Political-Promotion-Incentives
+Version: 0.1
+Date: 2022-30-03
+Author: Simon Maier
+Maintainer: Simon Maier <author@email.net>
+Description: RTutor problem set Chinas-Political-Promotion-Incentives
+License: Not yet licensed by the author. The default suggestion for licensing is
+	Problem set content: Creative Commons (CC BY-SA)
+	Package code: GPL >= 2.0
+Depends: RTutor
