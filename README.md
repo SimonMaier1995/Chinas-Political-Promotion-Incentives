@@ -1,6 +1,7 @@
 This package constitutes an interactive R problem set based on the RTutor package (https://github.com/skranz/RTutor). 
 
-The paper examines whether modified promotion criteria for governors helped to reduce excessive provincial river border pollution in China.
+The paper the problem set is based on examines whether modified promotion criteria for governors helped to reduce excessive provincial river border pollution in China.
+Both the paper and the data set can be found here: https://www.aeaweb.org/articles?id=10.1257/pol.20130367
 
 ## 1. Installation
 
