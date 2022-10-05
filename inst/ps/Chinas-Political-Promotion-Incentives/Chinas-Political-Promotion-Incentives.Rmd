@@ -4,6 +4,11 @@
 user.name = ''
 ```
 
+---
+output:
+  word_document: default
+  html_document: default
+---
 
 # China's Political Promotion Incentives to <br/> Control River Border Pollution
 
@@ -362,18 +367,20 @@ In order to later find our way around this data set with 26 variables and a tota
 
 Before we start, let us load the original data set the authors analysis is based on. The corresponding file is called *Regression_Data.dta* and is stored in the *.dta* file format. It is the primary format used by *Stata 15* through *Stata 17*. Since the *R* `base` package does not offer a way to read it, we use the `read_dta()` function provided by the `haven` package. If you need some help on how it works, feel free to read the info box below.
 
-```{r eval=FALSE}
-# Run for additional info in the Viewer pane
-info("How to load and save data with read_dta().")
-```
+
 
 **Task:** Start by loading the `haven` package using `library()`.
 
-```{r "6_4"}
+```{r "6_1"}
 #use library() to load the haven package
 ```
 
 After successfully loading the library `haven`, let us use the function `read_dta()` to read the data set.
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("How to load and save data with read_dta().")
+```
 
 **Task:** Use `read_dta()` to read the file *Regression_Data.dta* and save it in a variable called `dat`.
 
@@ -822,7 +829,7 @@ In the study we examine, the model is set up as follows:
 
 The stations at the border are considered as treated, since the policy change should set strong political promotion incentives to reduce water pollution at borders, while monitoring stations in the interior of the provinces are used as control group. We assume that incentives to reduce non-border pollution should not have changed afterwards. Since the incentives changed after 2005, our pre-experimental period lasts for two years, 2004 and 2005. It is worth discussing whether two years are sufficient to state that the pollution trends would have followed parallel paths in case the environmental law would not have changed. The years after the policy change, 2006 until 2010 represent the experimental period.
 
-The basic idea of the DiD approach is that if no treatment would have taken place, both the group that is considered as treated as well as the control group would have followed parallel paths over time (Angrist, 2008, p.230). At one point in time, an event happens that affects only one group and changes the course of its path. This group is considered as the treated group and the effect we measure is assumed to be causal for the change in the group's path. Since the assignment of the study objects or individuals is done randomly, it mimics a natural experiment in order to estimate causal effects (Cunningham, 2021, p.409). Hence, it is a quasi-experimental identification strategy (Cunningham, 2021, p.406).
+The basic idea of the DiD approach is that if no treatment would have taken place, both the group that is considered as treated as well as the control group would have followed parallel paths over time (Angrist, 2008, p.230). At one point in time, an event happens that affects only one group and changes the course of its path. This group is considered as the treated group and the effect we measure is assumed to be causal for the change in the group's path. Since the event and thus the variation happens naturally and is not arranged by the researchers, this is called a natural experiment, making DiD a quasi-experimental identification strategy (Cunningham, 2021, p.406).
 
 Let us think about what this means to the study here. If the government would not have tightened the environmental law regarding river border pollution, no change in the difference between the extent of water pollution at borders and non-borders - in other words treatment effect - should have been observed. This is the premise under which the approach can work in the first place.
 
@@ -888,36 +895,20 @@ I saved the data set in the *R*-related file type *.RDS*. Hence, we will need th
 
 The variables in the following task are equivalent to the following components of the formula above:
 
-* y_et ≙ $\bar y _{exp,tr}$
-* y_ec ≙ $\bar y _{exp,co}$
-* y_pt ≙ $\bar y _{pre,tr}$
-* y_pc ≙ $\bar y _{pre,co}$
+* y.et ≙ $\bar y _{exp,tr}$
+* y.ec ≙ $\bar y _{exp,co}$
+* y.pt ≙ $\bar y _{pre,tr}$
+* y.pc ≙ $\bar y _{pre,co}$
 
 In the next task, we will calculate those estimators.
 
 **Task:** Replace ___ either with $0$ or $1$ according to the description above to calculate the components of the formula correctly.
 
 ```{r "10_2"}
-y_et = dat %>% 
-  filter(boundary == ___ & year >= 2006) %>% 
-  select(cod) %>%
-  unlist() %>%
-  mean()
-y_ec = dat %>% 
-  filter(boundary == ___ & year >= 2006) %>% 
-  select(cod) %>% 
-  unlist() %>% 
-  mean()
-y_pt = dat %>%
-  filter(boundary == ___ & year < 2006) %>% 
-  select(cod) %>% 
-  unlist() %>% 
-  mean()
-y_pc = dat %>% 
-  filter(boundary == ___ & year < 2006) %>%
-  select(cod) %>% 
-  unlist() %>%
-  mean()
+y.et = mean(dat[dat$boundary == ___ & dat$year >= 2006, "cod"]$cod)
+y.ec = mean(dat[dat$boundary == ___ & dat$year >= 2006, "cod"]$cod)
+y.pt = mean(dat[dat$boundary == ___ & dat$year < 2006, "cod"]$cod)
+y.pc = mean(dat[dat$boundary == ___ & dat$year < 2006, "cod"]$cod)
 ```
 
 We used `filter()` with a variation of the filter argument to compute the means of the COD indicator of the according subsets. Hereby, `&` combines two expressions, one regarding the `boundary` dummy and one checking the `year` variable. Both must return `TRUE` to select the corresponding row.
@@ -927,7 +918,7 @@ Let us have a look at the intermediate results.
 **Task:** Click on `check` to show the values of the formula`s components:
 
 ```{r "10_3"}
-data.frame("PreExp.Treat" = round(y_pt, 2), "Exp.Treat" = round(y_et, 2), "PreExp.Cont" = round(y_pc, 2), "Exp.Cont" = round(y_ec, 2)) %>% 
+data.frame("PreExp.Treat" = round(y.pt, 2), "Exp.Treat" = round(y.et, 2), "PreExp.Cont" = round(y.pt, 2), "Exp.Cont" = round(y.ec, 2)) %>% 
   kbl() %>%
   kable_classic() %>%
   kable_styling(font_size = 15)
@@ -939,9 +930,9 @@ As you can see, the average pollution levels after 2005 decreased at borders - f
 
 ```{r "10_4"}
 #First calculate the difference between the means of the two groups during the experimental period:
-y_e = ___ - ___
+y.e = ___ - ___
 #Second calculate the difference between the means of the two groups during the pre-experimental period:
-y_p = ___ - ___
+y.p = ___ - ___
 #Last but not least, put the two results you just wrote down the formula for into the following gaps to correctly calculate the difference-in-difference estimator according to the formula above:
 DiD = ___ - ___
 DiD
@@ -1237,7 +1228,7 @@ Furthermore, let us run the simple regression from the second sub-exercise again
 reg = lm(cod ~ post06 + boundary + post06:boundary, data = dat)
 ```
 
-Standard errors tell us something about the quality of the estimated parameter. It allows us to derive how precise the estimators of the regression coefficients are. It is calculated as follows (Greene, 2002, p.75):
+Standard errors tell us something about the quality of the estimated parameters. It allows us to derive how precise the estimators of the regression coefficients are. It is calculated as follows (Greene, 2002, p.75):
 
 
 
@@ -1259,9 +1250,9 @@ Let us try to check those assumptions graphically. First, we calculate the resid
 
 $\varepsilon_{it} = COD_{it} - ß_0 - ß_1*post06_t - ß_2*boundary_i - ß_3*(post06_t \times boundary_i)$
 
-Luckily, the `stat` package, that does not need to be loaded manually, provides a function called `rstandard()`, that calculates standardized residuals. We just need to set one parameter, the name of the regression we want to calculate the residuals of.
+Luckily, the `stat` package, that does not need to be loaded manually, provides a function called `resid()`, that calculates residuals. We just need to set one parameter, the name of the regression we want to get the residuals of.
 
-**Task**: Replace ___ with the function and argument that calculates the standardized residuals of the regression `reg`. The function `cbind()` adds the column containing the results to `dat`.
+**Task**: Replace ___ with the function and argument that calculates the residuals of the regression `reg`. The function `cbind()` adds the column containing the results to `dat`.
 
 ```{r "12_3"}
 dat = dat %>%
@@ -1270,7 +1261,7 @@ dat = dat %>%
 
 Note that the name of the column containing the residuals is `res`.
 
-If the residuals are indeed identically and independently distributed, the residuals of each river system should be randomly distributed with mean $0$ for each cluster. To find out, let us plot the residuals `res` against `year` and color the data points according to the river system they belong to.
+If the error terms are indeed identically and independently distributed, the residuals of each river system should be randomly distributed with mean $0$ for each cluster. To find out, let us plot the residuals `res` against `year` and color the data points according to the river system they belong to.
 
 **Task:** Just `check` the next chunk to plot the residuals.
 
@@ -1288,7 +1279,7 @@ dat %>%
 
 The residuals of the Hai He and Huai river systems are more scattered than for example those of the Yangtze river system. Furthermore, the extent of dispersion for both the Hai He and Huai river system seems to decrease by the years. Hence, we expect the error terms of different observations within the same clusters to be serially as well as spatially correlated across clusters. As a consequence, the *iid* assumption is violated what makes us interested in cluster-robust standard errors.
 
-Incidentally, a similar observation must be made if we divide the residuals by province instead of river system. The reason for this is that each river system is tied to one or more specific provinces. Thus, if the residuals depend on the river systems and the river systems depend on the provinces, the residuals also depend on the provinces. Supplementary to the paper we will test this conjecture:
+Incidentally, a similar observation must be made if we divide the residuals by province instead of river system. The reason for this is that each river system is tied to one or more specific provinces. So if the residuals depend on the river systems and these in turn depend on the provinces, the residuals also depend on the provinces. Supplementary to the paper we will test this conjecture:
 
 **Task:** Just `check` the next chunk to plot the residuals.
 
@@ -1305,7 +1296,7 @@ dat %>%
   theme_bw()
 ```
 
-In the plot above the residuals for three provinces are shown exemplary. What we observe is similar to the results before, when we categorized by river system and confirms the we presumed before. Due to linkage between river systems and province, we see that the residuals of Hebei and Shandong are far more scattered than those of Guangdong. Hence, we see further evidence for violations of the *iid* assumption - the standard errors are clustered by province, too.
+In the plot above the residuals for three provinces are shown exemplary. What we observe is similar to the results before where we categorized by river system and confirms what we presumed before. Due to linkage between river systems and province, we see that the residuals of Hebei and Shandong are far more scattered than those of Guangdong. Hence, we see further evidence for violations of the *iid* assumption - the standard errors are clustered by province, too.
 For all regressions conducted in the paper, the researchers need to deal with potential heteroskedasticity and spatial correlation. So they decided to cluster the standard errors along two dimensions, by monitoring station and river system/year to allow for series and spatial correlation. Luckily, the command `feols()` can be instructed easily to cluster standard errors by one or more dimensions. Just have a look into the info box below to learn how to set the parameters correctly.
 
 ```{r eval=FALSE}
@@ -1370,19 +1361,19 @@ answer.quiz("Difference.clustered.SE")
 
 <br/>
 
-While all of the estimated regression coefficients stayed exactly the same, their standard errors have increased massively when calculating in a cluster-robust way. The `post06` dummy, formerly significant on the 0.1 % level, is not significant anymore. Same applies for the interaction term between the `post06` and the `boundary` dummy. Hence, when interpreting regression results from clustered data, it is crucial to calculate cluster robust standard errors. Otherwise, one will probably far overestimate the significance of the estimated coefficients Due to the - in the small sample bias correction context - slightly less conservative procedure of `xtivreg2()`, the standard errors are jointly a little bit smaller in the last column.
+While all of the estimated regression coefficients remained exactly the same, their standard errors have increased massively when calculating in a cluster-robust way. The `post06` dummy, formerly significant on the 0.1 % level, is not significant anymore. Same applies for the interaction term between the `post06` and the `boundary` dummy. Hence, when interpreting regression results from clustered data, it is crucial to calculate cluster robust standard errors. Otherwise, one would probably greatly overestimate the significance of the estimated coefficients. Due to the - in the small sample bias correction context - slightly less conservative procedure of `xtivreg2()`, the standard errors are jointly a little bit smaller in the last column.
 
 **Summary**
 
-As we saw, it is essential to calculate cluster-robust standard errors when performing regressions on a clustered data set. Otherwise, we will overestimate the significance of estimated parameters by a large extent. However, the procedure how standard errors can be adapted in additional ways, for example by adjusting for small samples. That is way, the default cluster robust standard errors calculated in `feols()` differ slightly from the paper's results. For all analysis done from now, we will only consider the standard errors clustered by monitoring station and river/year, imitating the procedure of the addon used by the authors, `xtivreg2()`.
+As we saw, it is essential to calculate cluster-robust standard errors when performing regressions on a clustered data set. Otherwise, we will overestimate the significance of estimated parameters by a large extent. However, the procedure how standard errors can be adapted in additional ways, for example by adjusting for small samples. That is why the default cluster robust standard errors calculated in `feols()` differ slightly from the paper's results. For all analysis done from now, we will only consider the standard errors clustered by monitoring station and river/year, imitating the procedure of the addon used by the authors, `xtivreg2()`.
 
 That is not the only obstacle to overcome in this study. One of the main assumptions of the DiD approach is the *Parallel Trends* assumption. We will learn about it and how to heal model deficiencies by introducing fixed effects and control variables in the next sub-exercise.
 
 ## Exercise 3.4 -- Fixed Effects and Control Variables
 
-In the previous chapter, we introduced a regression examining the link between changes in China's political promotion incentives and relative changes in water pollution at borders. We focus on chemical oxygen demand since provincial officials are evaluated using this pollution indicator. Usually, it is not sufficient just to include the variables of interest but rather it is necessary to control for fixed effects and other variables that capture variance that is not explained yet by the model. Actually, the DiD approach is designed to avoid the need of control variables and fixed effects. However, the premise under which this approach works are parallel trends during the time before the experiment started. Let us examine this assumption in this chapter.
+In the previous chapter, we introduced a regression examining the link between changes in China's political promotion incentives and relative changes in water pollution at borders. We focus on chemical oxygen demand since provincial officials are evaluated using this pollution indicator. Usually, it is not sufficient just to include the variables of interest but rather it is necessary to control for fixed effects and other variables that capture variance that is not explained yet by the model. Actually, the DiD approach is designed to avoid the need of control variables and fixed effects. However, the premise under which this approach works are parallel trends absent treatment. Let us examine this assumption in this chapter.
 
-First and foremost, let us read the data set from `Regression_Data_dta` and add the `post06` dummy.
+First and foremost, let us read the data set from `dat.RDS`.
 
 **Task:** Just `check` the chunk below to load the data set.
 
@@ -1391,11 +1382,11 @@ dat = readRDS("dat.RDS")
 ```
 
 
-**Assumption: Parallel trend**
+**Assumption: Parallel trends**
 
-The parallel trend assumption is the core assumption of the DiD approach. We assume that if no experiment took place, the difference between the treatment and the control group would not have changed. The course of the value relevant for us, the COD averages, would therefore have taken a parallel path for both groups. We can check this assumption graphically by looking at the course of the curve during the pre-experimental period.
+The parallel trends assumption is the core assumption of the DiD approach. We assume that if no experiment took place, the difference between the treatment and the control group would not have changed. The course of the value relevant for us, the COD averages, would therefore have taken a parallel path for both groups. We can check this assumption graphically by looking at the course of the curve during the pre-experimental period.
 
-Let us check this here. In our example, the parallel trend assumption means, that the gap between the measurements at border and non-border stations would not have changed, if China had not experienced the policy change in 2006. We check this by examining the trends of the years 2004 and 2005, exemplary for COD. However, this pre-experimental period is relatively short, since this means we do not know anything about the courses prior to these years.
+Let us check this here. In our example, the parallel trend assumption means, that the gap between the measurements at border and non-border stations would not have changed, if China had not experienced the policy change in 2006. We check this by examining the trends of the years 2004 and 2005, exemplary for COD. However, this pre-experimental period is relatively short, this means we do not know anything about the courses prior to these years.
 
 The average pollution values per year and location(boundary/non-boundary) for all indicators from *Exercise 2.3* are stored in `dat.mean.RDS`.
 
@@ -1493,7 +1484,7 @@ dat.log = dat %>%
 
 Let us compare the results:
 
-**Task:** Just `check` the chunk to display both the plot from the previous task as well as the plot using logarithmized values.
+**Task:** Just `check` the chunk to display the plot from the previous task but this time using logarithmized values.
 
 ```{r "13_7",fig.width=11}
 #annotations
@@ -1623,7 +1614,7 @@ An example will clarify this phenomenon: If one of the year dummies indicating t
 
 As a consequence, we do not include the interaction effect by applying `post06*boundary`, but by the expression `post06:boundary` that does not add the variables themselves implicitly to the formula.
 
-### Control variables
+### Control Variables
 
 As announced before, we want to include further variables that help us overcoming possible deficiencies regarding the parallel trends assumption and in that sense preventing us from leaving unexplained variance not taken into account yet through our model.
 
@@ -1683,7 +1674,7 @@ ___ = predict(reg.pt, dat.0) + resid(___)
 
 ```
 
-*Step 4:* In the next chunk I have combined two steps. First, the preparing the data set for the plot as we already did two times before, Second, creating and showing a plot to virtually assessing the parallel trends assumption.
+*Step 4:* In the next chunk I have combined two steps. First, preparing the data set for the plot as we already did two times before, Second, creating and showing a plot to virtually assessing the parallel trends assumption.
 
 **Task:** Just `check` to prepare the data set and show the plot.
 
@@ -1730,10 +1721,11 @@ After verifying the parallel trends assumption, let us display both the results 
 **Task:** Just `check` the following chunk to compare the two previous regression results with the results from the regression extended by the above mentioned controls.
 
 ```{r "13_16"}
-#run regression
+#run regressions
 reg = feols(cod ~ post06*boundary, cluster = c("station", "riversystem"), ssc = ssc(adj=FALSE, cluster.adj = FALSE, t.df = "conventional"), data = dat)
+reg.log = feols(cod.log ~ post06*boundary, cluster = c("station", "riversystem"), ssc = ssc(adj=FALSE, cluster.adj = FALSE, t.df = "conventional"), data = dat)
 #compare results
-modelsummary(list("Conventional Regression" = reg, "FE Regression with Controls" = reg.fe.ctrl),
+modelsummary(list("Conventional Regression" = reg, "Conventional Regression (Log.)" = reg.log, "FE Regression with Controls (Log.)" = reg.fe.ctrl),
              coef_rename = c("post06" = "Post2006", "boundary" = "Boundary", "post06:boundary"	= "Post2006 x Boundary"),
              coef_omit = "year|temp|light|gd",
              stars = c('*' = .1, '**' = 0.05 ,'***' = .01), 
@@ -1745,7 +1737,7 @@ modelsummary(list("Conventional Regression" = reg, "FE Regression with Controls"
 
 The `Conventional Regression` in the first regression does not consider fixed effects or control variables. The second column shows a regression including both fixed effects and control variables as described above. Here, the coefficient of the interaction term between the `Boundary` and `Post2006` dummy is smaller, but shows a higher significance than in the regression without controls and fixed effects.
 
-The estimated coefficient of $-0.052$ can be interpreted as follows: If no experiment had taken place - which means the government would not have changed promotion incentives regarding river border pollution - the COD concentration at borders after 2006 would be on an average $-0.052$ higher. Said the other way around, this is the amount the water quality improved thanks to the regime change. However, the interpretability depends on the significance of the coefficients that is on the one percent level and therefore highly significant. Interestingly, the magnitude of the coefficient has shrunk a lot. Hence, parts of the reduction must be caused by other factors, aside from the government's action.
+The estimated coefficient of $-0.052$ can be interpreted as follows: If no experiment had taken place - which means the government would not have changed promotion incentives regarding river border pollution - the COD concentration at borders after 2006 would be on an average $-0.052$ higher. Said the other way around, this is the amount the water quality improved thanks to the regime change. The significance of the coefficients is on the one percent level and therefore highly significant. Interestingly, the magnitude of the coefficient has shrunk a lot. Hence, parts of the reduction must be caused by other factors, aside from the government's action.
 
 **Summary**
 
