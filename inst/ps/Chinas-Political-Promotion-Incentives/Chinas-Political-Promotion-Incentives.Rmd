@@ -4,11 +4,6 @@
 user.name = ''
 ```
 
----
-output:
-  word_document: default
-  html_document: default
----
 
 # China's Political Promotion Incentives to <br/> Control River Border Pollution
 
