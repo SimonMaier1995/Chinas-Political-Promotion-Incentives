@@ -3,6 +3,9 @@ This package constitutes an interactive R problem set based on the RTutor packag
 The paper the problem set is based on examines whether modified promotion criteria for governors helped to reduce excessive provincial river border pollution in China.
 Both the paper and the data set can be found here: https://www.aeaweb.org/articles?id=10.1257/pol.20130367
 
+In case you do not want to install the problem set, you may have a look here: https://simonmaier.shinyapps.io/Chinas-Political-Promotion-Incentives/
+However, you are not able to store your progress there.
+
 ## 1. Installation
 
 RTutor and this package is hosted on Github. To install everything, run the following code in your R console.
