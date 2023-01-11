@@ -141,7 +141,9 @@ Those branches select delegates which make up congresses at the municipal, count
 On the **Central Level** we find the party's *National Congress* that is voted by forty electoral units. It consists out of over 2000 members which elect the *Central Committee* via a candidate list that is prepared by the *Politburo* and its *Standing Committee*. During a plenary meeting, that occurs at least once per year, the **Central Committee** holds elections for composing the *Politburo* and its *Standing Committee*. The latter exercises functions and powers of the *Central Committee* between the just mentioned plenary sessions. Furthermore, it nominates the members of the committee's working body, the *Secretariat*.
 
 <center>
-![Structure of China's Political System](structure.svg)
+
+![Structure of China's Political System](structure.png)
+
 </center>
 
 Summarizing, there are three top bodies of the party, which centralize a great deal of power:
@@ -311,8 +313,8 @@ dat %>%
 #< quiz "pollution_comp"
 question: Is the average pollution measured at borders higher than it is at interior stations?
 sc:
-- Yes*
-- No
+- Yes.*
+- No.
 success: Great, your answer is correct!
 failure: Try again.
 #>
@@ -581,7 +583,7 @@ library(ggmap)
 #load and show map
 readRDS("map.china.RDS") %>%
 ggmap() + 
-  geom_point(data=dat, aes(x = x, y = y, color = riversystem, size=3)) +
+  geom_point(data=dat, aes(x = x, y = y, color = riversystem), size=3) +
   xlab("Longitude") +
   ylab("Latitude") +
   theme_bw() +
@@ -888,10 +890,10 @@ The variable `boundary` hereby is an indicator variable that is $1$ for a monito
 #< quiz "no_interior_stations"
 question: How many interior stations did exist in the year 2005?
 sc:
-- 361*
-- 125
-- 486
-- 231
+- 361.*
+- 125.
+- 486.
+- 231.
 success: Great, your answer is correct!
 failure: Try again.
 #>
@@ -1669,9 +1671,7 @@ The regression model examined here only included the dummy variables indicating 
 
 To refine the analysis, we introduce cluster-robust standard errors. This is crucial, since the default standard error calculation procedure underestimates the true variation due to some special characteristics in the data. In this sub-exercise, we want to explore these peculiarities and learn how to solve this issue. For this purpose, we focus on the regression model from *Exercise 3.2* applied to COD:
 
-$$
-COD _{it} = ß _{0} + ß_1post06_t + ß_2border_i + ß_3(post06_t \times border_i) + \varepsilon_{it}
-$$
+$COD _{it} = ß _{0} + ß_1post06_t + ß_2border_i + ß_3(post06_t \times border_i) + \varepsilon_{it}$
 
 Before we start, we load the data set used before for our regressions.
 
@@ -1721,16 +1721,16 @@ $\varepsilon_{it} = COD_{it} - ß_0 - ß_1*post06_t - ß_2*boundary_i - ß_3*(po
 
 Luckily, the `stat` package, that does not need to be loaded manually, provides a function called `resid()`, that calculates residuals. We just need to set one parameter, the name of the regression we want to get the residuals of.
 
-**Task**: Replace ___ with the function and argument that calculates the residuals of the regression `reg`. The function `cbind()` adds the column containing the results to `dat`.
+**Task**: Replace ___ with the function and argument that calculates the residuals of the regression `reg`. Use `mutate()` to add the column `res` containing the results to `dat`.
 
 ```{r "3.3.3"}
 
 #< fill_in
 dat = dat %>%
-  cbind(res = ___)
+  mutate(res = ___)
 #>
 dat = dat %>%
-  cbind(res = resid(reg))
+  mutate(res = resid(reg))
 
 ```
 
@@ -2607,7 +2607,7 @@ According to the authors, there are three major sources of COD discharges, which
 * Domestic activity and;
 * Agricultural runoff.
 
-What would you guess are the percentages of each sector? Simply guess in the next quiz.
+What do you think are the percentages of each sector? Simply guess in the next quiz.
 
 #< quiz "COD by sector"
 question: Rank the sectors in descending order of their share to total COD emissions in China.
@@ -3292,7 +3292,7 @@ reg.riv = feols(cod ~ post06 + boundary + post06:boundary + gdpg + gdpp + temper
 
 As we did in the previous exercise, we would like to estimate the regression from the previous task again, but this time with proximity to boundary `prox` instead of the dummy variable `boundary`. If the policy change had been effective, we expect that monitoring stations closer to the border must have experienced a stronger water quality improvement after 2006 compared to stations that are more distanced to the provincial boundary.
 
-**Task**: Let us take the regression formula from task 4.2.5 and replace the respective terms.
+**Task**: The respective term is already replaced - just check the chunk.
 
 ```{r "A2.3"}
 
@@ -3301,8 +3301,6 @@ As we did in the previous exercise, we would like to estimate the regression fro
 reg.riv.prox = feols(cod ~ post06 + boundary + post06:boundary + temperature + gdpg + gdpp + lightbuffer5km | riversystem, cluster = c("station", "riversystem_time") , ssc = ssc(adj = TRUE, cluster.adj = TRUE, cluster.df = "conventional"), data = dat)
 
 #>
-
-reg.riv.prox = feols(cod ~ post06 + prox + post06*prox + gdpg + gdpp + temperature + lightbuffer5km | riversystem, cluster = c("station", "riversystem_time") , ssc = ssc(adj = TRUE, cluster.adj = TRUE, cluster.df = "conventional"), data = dat)
 
 ```
 
