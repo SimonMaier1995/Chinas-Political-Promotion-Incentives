@@ -860,14 +860,14 @@ If you want to read up on the meaning of the key figures, I recommend to have a 
 
 Before, we start let us load the data set.
 
-**Task**: Read the file `Regression_data.dta` with help of `read_dta()` and save it in `dat`.
+**Task**: Read the file `dat.RDS` with help of `readRDS()` and save it in `dat`.
 
 ```{r "2.3.1"}
 
 #< task
 #read "dat.RDS" with help of readRDS()
 #>
-dat = read_dta("Regression_data.dta")
+dat = readRDS("dat.RDS")
 
 ```
 
